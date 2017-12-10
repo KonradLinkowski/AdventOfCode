@@ -1041,23 +1041,90 @@ let lines = string.split('\n');
 
 let words = [];
 for (let i = 0; i < lines.length; i++) {
-    lines[i] = lines[i].replace(/,/g , "");
+    lines[i] = lines[i].replace(/,/g , "").replace(/\(/g , "").replace(/\)/g , "");
     let tempLine = lines[i].split(' ');
-    if (tempLine.length > 3) {
-        tempLine.splice(1, 2);
-        words.push(tempLine);
-    }
+    tempLine.splice(2, 1);
+    words.push(tempLine);
 }
 
-function findRoot(node) {
-    for (let i = 0; i < words.length; i++) {
-        for (let j = 1; j < words[i].length; j++) {
-            if (node == words[i][j]) {
-                return findRoot(words[i][0]);
+class Tree {
+    constructor() {
+        this.Node = class {
+            constructor(value, parent, weight) {
+                this.children = [];
+                this.parent = parent;
+                this.value = value;
+                this.weight = weight;
+            }
+            addChild(value, weight) {
+                console.log("test",this)
+                this.children.push(new this.Node(value, this, weight));
             }
         }
+        this.root;
     }
-    return node;
+
+    print(node) {
+        if (node != root) {
+            console.log(node.parent.value, node.parent.weight, ' => ', node.value, node.weight);
+        } else {
+            console.log("root", node.value, node.weight);
+        }
+        if (!node.children) {
+            return;
+        }
+        node.children.forEach((element) => {
+            print(node);
+        });
+    }
+
+    findNode(value, node) {
+        if (node.value == value) {
+            return node;
+        }
+        let temp = null;
+        node.children.forEach((element) => {
+            temp = this.findNode(value, this)
+            if (temp) {
+                return temp;
+            }
+        });
+        return null;
+    }
+
+    addNode(value, children, weight) {
+        if (!this.root) {
+            this.root = new this.Node(value, null, weight);
+            return true;
+        }
+        let tempNode = this.findNode(value, this.root);
+        if (tempNode) {
+            console.log (tempNode);
+            if (tempNode.children.length <= 0 && children.length > 0) {
+                console.log(children.length);
+                for (let i = 0; i < children.length; i++) {
+                    tempNode.addChild(children[i]);
+                }
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 }
 
-console.log(findRoot(words[0][0]));
+let tree = new Tree();
+for (let i = 0; i < words.length; i++) {
+    //console.log ("node", words[i][0]);
+    //console.log('children', words[i].slice(2, words.length));
+    //console.log('weight', words[i][1]);
+    if (tree.addNode(words[i][0], words[i].slice(2, words.length), words[i][1])) {
+        words.splice(i, 1);
+        i--;
+    }
+    
+}
+console.log(tree.root);
+tree.print(tree.root);
