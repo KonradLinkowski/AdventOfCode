@@ -1,5 +1,5 @@
 "use strict"
-let input = '102,255,99,252,200,24,219,57,103,2,226,254,1,0,69,216';
+let input = 'Kornad Baranek';
 let lengths = [];
 for (let i = 0; i <input.length; i++) {
     lengths.push(input[i].charCodeAt(0));
