@@ -1,4 +1,4 @@
-const input = require('../loader')
+const input = require('../../loader')
 const numbers = input.split('\n').map(Number)
 const calcFuel = mass => {
   const fuel = Math.floor(mass / 3) - 2
