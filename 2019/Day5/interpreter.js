@@ -17,13 +17,53 @@ class Interpreter {
       2: this.mul.bind(this),
       3: this.input.bind(this),
       4: this.output.bind(this),
+      5: this.jumpIfTrue.bind(this),
+      6: this.jumpIfFalse.bind(this),
+      7: this.lessThan.bind(this),
+      8: this.equals.bind(this),
       99: this.end.bind(this)
     }
     while (!this.finish) {
-      const { code, modes } = this.opcode() 
+      const { code, modes } = this.opcode()
       states[code](modes)
     }
     return this
+  }
+
+  jumpIfTrue([am, bm]) {
+    const val = am ? this.consume() : this.address()
+    const dest = bm ? this.consume() : this.address()
+
+    if (val) {
+      this.index = dest
+    }
+  }
+
+  jumpIfFalse([am, bm]) {
+    const val = am ? this.consume() : this.address()
+    const dest = bm ? this.consume() : this.address()
+
+    if (!val) {
+      this.index = dest
+    }
+  }
+
+  lessThan([am, bm, cm = 1]) {
+    const a = am ? this.consume() : this.address()
+    const b = bm ? this.consume() : this.address()
+    const dest = cm ? this.consume() : this.address()
+
+
+    this.code[dest] = a < b ? 1 : 0
+  }
+
+  equals([am, bm, cm = 1]) {
+    const a = am ? this.consume() : this.address()
+    const b = bm ? this.consume() : this.address()
+    const dest = cm ? this.consume() : this.address()
+
+    
+    this.code[dest] = a == b ? 1 : 0
   }
 
   opcode() {
